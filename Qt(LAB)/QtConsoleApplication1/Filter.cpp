@@ -1,4 +1,4 @@
-#include "Filter.h"
+п»ї#include "Filter.h"
 #define PI 3.14159265
 
 template <class T>
@@ -123,10 +123,10 @@ QImage LinearTensionFilter::process(const QImage& img) const
 
 QColor TurnFilter::calcNewPixelColor(const QImage& img, int x, int y) const
 {
-	//Центр поворота
+	//Р¦РµРЅС‚СЂ РїРѕРІРѕСЂРѕС‚Р°
 	int xCenter = img.width() / 2;
 	int yCenter = img.height() / 2;
-	//угол поворота
+	//СѓРіРѕР» РїРѕРІРѕСЂРѕС‚Р°
 	float u = PI / 6;
 	int newX = (x - xCenter) * cos(u) - (y - yCenter) * sin(u) + xCenter;
 	int newY = (x - xCenter) * sin(u) + (y - yCenter) * cos(u) + yCenter;
