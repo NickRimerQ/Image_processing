@@ -45,9 +45,20 @@ class BrightnessFilter : public Filter
 //------------------------------------------------------------------------------\\
 //Серый мир
 
+//class GrayWorldFilter : public Filter
+//{
+//	QColor calcNewPixelColor(const QImage& img, int x, int y) const override;
+//};
+
+//------------------------------------------------------------------------------\\
+//Серый мир1
+
 class GrayWorldFilter : public Filter
 {
 	QColor calcNewPixelColor(const QImage& img, int x, int y) const override;
+	QColor calculateNewPixelColor(const QImage& img, int x, int y, QColor _color, int _n) const;
+public:
+	QImage process(const QImage& img) const override;
 };
 
 //------------------------------------------------------------------------------\\

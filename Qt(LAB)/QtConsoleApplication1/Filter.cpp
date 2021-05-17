@@ -54,13 +54,54 @@ QColor BrightnessFilter::calcNewPixelColor(const QImage& img, int x, int y) cons
 	return color;
 }
 
+//QColor GrayWorldFilter::calcNewPixelColor(const QImage& img, int x, int y) const
+//{
+//	QColor color = img.pixelColor(x, y);
+//	color.setRgb((color.red() + color.green() + color.blue()) / 3, (color.red() + color.green() + color.blue()) / 3, (color.red() + color.green() + color.blue()) / 3);
+//	return color;
+//}
+
 QColor GrayWorldFilter::calcNewPixelColor(const QImage& img, int x, int y) const
 {
+	return QColor();
+}
+
+QColor GrayWorldFilter::calculateNewPixelColor(const QImage& img, int x, int y, QColor Color, int N) const
+{
 	QColor color = img.pixelColor(x, y);
-	color.setRgb((color.red() + color.green() + color.blue()) / 3, (color.red() + color.green() + color.blue()) / 3, (color.red() + color.green() + color.blue()) / 3);
+	color.setRgb(clamp((color.red() * N) / Color.red(), 255, 0), clamp((color.green() * N) / Color.green(), 255, 0), clamp((color.blue() * N) / Color.blue(), 255, 0));
 	return color;
 }
 
+QImage GrayWorldFilter::process(const QImage& img) const
+{
+	QImage result(img);
+	int r = 0, g = 0, b = 0, n = 0;
+	for (int x = 0; x < img.width(); x++)
+		for (int y = 0; y < img.height(); y++)
+		{
+			QColor color = img.pixelColor(x, y);
+			r = r + color.red();
+			g = g + color.green();
+			b = b + color.blue();
+		}
+	n = img.width() * img.height();
+	if (n <= 0)
+		throw - 1;
+	r = r / n;
+	g = g / n;
+	b = b / n;
+	n = (r + g + b) / 3;
+	QColor color;
+	color.setRgb(clamp(r, 255, 0), clamp(g, 255, 0), clamp(b, 255, 0));
+	for (int x = 0; x < img.width(); x++)
+		for (int y = 0; y < img.height(); y++)
+		{
+			QColor Сolor = calculateNewPixelColor(img, x, y, color, n);
+			result.setPixelColor(x, y, Сolor);
+		}
+	return result;
+}
 
 QColor LinearTensionFilter::calcNewPixelColor(const QImage& img, int x, int y) const
 {
@@ -120,27 +161,6 @@ QImage LinearTensionFilter::process(const QImage& img) const
 
 }
 
-
-QColor TurnFilter::calcNewPixelColor(const QImage& img, int x, int y) const
-{
-	//Центр поворота
-	int xCenter = img.width() / 2;
-	int yCenter = img.height() / 2;
-	//угол поворота
-	float u = PI / 6;
-	int newX = (x - xCenter) * cos(u) - (y - yCenter) * sin(u) + xCenter;
-	int newY = (x - xCenter) * sin(u) + (y - yCenter) * cos(u) + yCenter;
-
-	if (newX < img.width() && newX > 0 && newY < img.height() && newY > 0)
-	{
-		return img.pixelColor(newX, newY);
-	}
-	else
-	{
-		return QColor(0, 0, 0);
-	}
-}
-
 QColor WavesFilter::calcNewPixelColor(const QImage& img, int x, int y) const
 {
 	//1
@@ -158,10 +178,10 @@ QColor WavesFilter::calcNewPixelColor(const QImage& img, int x, int y) const
 
 QColor GlassFilter::calcNewPixelColor(const QImage& img, int x, int y) const
 {
-	double random_0_to_1 = rand() % 11 / 10.f;
+	double random = rand() % 11 /10.f;
 
-	int newX = clamp((float)(x + (random_0_to_1 - 0.5) * 10), (float)(img.width() - 1), 0.f);
-	int newY = clamp((float)(y + (random_0_to_1 - 0.5) * 10), (float)(img.height() - 1), 0.f);
+	int newX = clamp((float)(x + (random - 0.5) * 10), (float)(img.width() - 1), 0.f);
+	int newY = clamp((float)(y + (random - 0.5) * 10), (float)(img.height() - 1), 0.f);
 
 	return img.pixelColor(newX, newY);
 }
